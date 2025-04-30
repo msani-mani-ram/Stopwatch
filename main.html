@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Enhanced Stopwatch</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #bcce33 0%, #4bd2d2 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .stopwatch {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      text-align: center;
+      width: 320px;
+    }
+
+    .display {
+      font-size: 3em;
+      color: #3ec732;
+      margin-bottom: 20px;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .controls button {
+      padding: 10px 15px;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .start-btn {
+      background-color: #66bb6a;
+      color: white;
+    }
+
+    .stop-btn {
+      background-color: #ef5350;
+      color: white;
+    }
+
+    .lap-btn {
+      background-color: #42a5f5;
+      color: white;
+    }
+
+    .reset-btn {
+      background-color: #ab47bc;
+      color: white;
+    }
+
+    .clear-btn {
+      background-color: #ffa726;
+      color: white;
+    }
+
+    .laps {
+      max-height: 150px;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    .lap-time {
+      padding: 5px;
+      background: #f3e5f5;
+      margin-bottom: 5px;
+      border-radius: 5px;
+      font-size: 0.95em;
+    }
+  </style>
+</head>
+<body>
+  <div class="stopwatch">
+    <div class="display" id="display">00:00:00</div>
+    <div class="controls">
+      <button class="start-btn" id="startStopBtn" onclick="startStop()">Start</button>
+      <button class="lap-btn" onclick="lap()">Lap</button>
+      <button class="reset-btn" onclick="reset()">Reset</button>
+      <button class="clear-btn" onclick="clearLaps()">Clear Laps</button>
+    </div>
+    <div class="laps" id="lapsContainer"></div>
+  </div>
+
+  <script>
+    let time = 0;
+    let running = false;
+    let timer;
+    let lapCount = 0;
+    const display = document.getElementById('display');
+    const startStopBtn = document.getElementById('startStopBtn');
+    const lapsContainer = document.getElementById('lapsContainer');
+
+    function startStop() {
+      if (running) {
+        clearInterval(timer);
+        running = false;
+        startStopBtn.textContent = 'Resume';
+        startStopBtn.className = 'start-btn';
+      } else {
+        timer = setInterval(updateTime, 10);
+        running = true;
+        startStopBtn.textContent = 'Pause';
+        startStopBtn.className = 'stop-btn';
+      }
+    }
+
+    function updateTime() {
+      time++;
+      display.textContent = formatTime(time);
+    }
+
+    function formatTime(t) {
+      const minutes = Math.floor(t / 6000);
+      const seconds = Math.floor((t % 6000) / 100);
+      const milliseconds = t % 100;
+      return `${pad(minutes)}:${pad(seconds)}:${pad(milliseconds)}`;
+    }
+
+    function pad(num) {
+      return num.toString().padStart(2, '0');
+    }
+
+    function lap() {
+      if (running) {
+        lapCount++;
+        const lapDiv = document.createElement('div');
+        lapDiv.className = 'lap-time';
+        lapDiv.textContent = `Lap ${lapCount}: ${formatTime(time)}`;
+        lapsContainer.prepend(lapDiv);
+      }
+    }
+
+    function reset() {
+      clearInterval(timer);
+      time = 0;
+      running = false;
+      lapCount = 0;
+      display.textContent = '00:00:00';
+      startStopBtn.textContent = 'Start';
+      startStopBtn.className = 'start-btn';
+    }
+
+    function clearLaps() {
+      lapsContainer.innerHTML = '';
+      lapCount = 0;
+    }
+  </script>
+</body>
+</html>
